@@ -5,14 +5,34 @@ var entities = require('./vendor/entities')
 
 var {
   Text,
+  View
 } = ReactNative
 
 var Image = require('./helper/Image')
 
-
 var LINE_BREAK = '\n'
 var PARAGRAPH_BREAK = '\n\n'
 var BULLET = '\u2022 '
+
+function getStyle(node) {
+  let result = {};
+  if (typeof node.attribs.style === 'string') {
+    const style = node.attribs.style.split(' ').join('');
+    if (style.includes('font-weight:bold')) {
+      result.fontWeight = 'bold';
+    }
+    if (style.includes('text-decoration:underline')) {
+      result.textDecorationLine = 'underline';
+    }
+    if (style.includes('text-decoration:line-through')) {
+      result.textDecorationLine = 'line-through';
+    }
+    if (style.includes('font-style:italic')) {
+      result.fontStyle = 'italic';
+    }
+  }
+   return result;
+}
 
 function htmlToElement(rawHtml, opts, done) {
   function domToElement(dom, parent) {
@@ -24,7 +44,6 @@ function htmlToElement(rawHtml, opts, done) {
         if (rendered || rendered === null) return rendered
       }
 
-
       if (node.type == 'text') {
         return (
           <Text key={index} style={parent ? opts.styles[parent.name] : null}>
@@ -34,6 +53,7 @@ function htmlToElement(rawHtml, opts, done) {
       }
 
       if (node.type == 'tag') {
+        const baseStyle = getStyle(node);
         if (node.name == 'img') {
           var img_w = +node.attribs['width'] || +node.attribs['data-width'] || 0
           var img_h = +node.attribs['height'] || +node.attribs['data-height'] || 0
@@ -58,8 +78,8 @@ function htmlToElement(rawHtml, opts, done) {
         }
 
         return (
-          <Text key={index} onPress={linkPressHandler}>
-            {node.name == 'pre' ? LINE_BREAK : null}
+          <Text key={index} style={baseStyle} onPress={linkPressHandler}>
+            {node.name == 'pre' || node.name == 'div' ? LINE_BREAK : null}
             {node.name == 'li' ? BULLET : null}
             {domToElement(node.children, node)}
             {node.name == 'br' || node.name == 'li' ? LINE_BREAK : null}

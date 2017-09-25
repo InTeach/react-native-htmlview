@@ -3,10 +3,7 @@ var ReactNative = require('react-native')
 var htmlparser = require('./vendor/htmlparser2')
 var entities = require('./vendor/entities')
 
-var {
-  Text,
-  View
-} = ReactNative
+var {Text, View} = ReactNative
 
 var Image = require('./helper/Image')
 
@@ -15,23 +12,34 @@ var PARAGRAPH_BREAK = '\n\n'
 var BULLET = '\u2022 '
 
 function getStyle(node) {
-  let result = {};
+  let result = {}
   if (typeof node.attribs.style === 'string') {
-    const style = node.attribs.style.split(' ').join('');
+    const style = node.attribs.style.split(' ').join('')
+    const newStyles = style.split(';')
+    newStyles.map(newStyle => {
+      const newElem = newStyle.split(':')
+      const key = newElem[0]
+      const value = newElem[1]
+
+      if (key !== '') {
+        result[key] = value
+      }
+    })
+
     if (style.includes('font-weight:bold')) {
-      result.fontWeight = 'bold';
+      result.fontWeight = 'bold'
     }
     if (style.includes('text-decoration:underline')) {
-      result.textDecorationLine = 'underline';
+      result.textDecorationLine = 'underline'
     }
     if (style.includes('text-decoration:line-through')) {
-      result.textDecorationLine = 'line-through';
+      result.textDecorationLine = 'line-through'
     }
     if (style.includes('font-style:italic')) {
-      result.fontStyle = 'italic';
+      result.fontStyle = 'italic'
     }
   }
-   return result;
+  return result
 }
 
 function htmlToElement(rawHtml, opts, done) {
@@ -53,10 +61,11 @@ function htmlToElement(rawHtml, opts, done) {
       }
 
       if (node.type == 'tag') {
-        const baseStyle = getStyle(node);
+        const baseStyle = getStyle(node)
         if (node.name == 'img') {
           var img_w = +node.attribs['width'] || +node.attribs['data-width'] || 0
-          var img_h = +node.attribs['height'] || +node.attribs['data-height'] || 0
+          var img_h =
+            +node.attribs['height'] || +node.attribs['data-height'] || 0
 
           var img_style = {
             width: img_w,
@@ -67,14 +76,20 @@ function htmlToElement(rawHtml, opts, done) {
             width: img_w,
             height: img_h,
           }
+          return <Image key={index} source={source} style={img_style} />
+        }
+        if (node.name === 'strong') {
           return (
-            <Image key={index} source={source} style={img_style} />
+            <Text style={{fontWeight: 'bold'}}>
+              {domToElement(node.children, node)}
+            </Text>
           )
         }
 
         var linkPressHandler = null
         if (node.name == 'a' && node.attribs && node.attribs.href) {
-          linkPressHandler = () => opts.linkHandler(entities.decodeHTML(node.attribs.href))
+          linkPressHandler = () =>
+            opts.linkHandler(entities.decodeHTML(node.attribs.href))
         }
 
         return (
@@ -83,8 +98,16 @@ function htmlToElement(rawHtml, opts, done) {
             {node.name == 'li' ? BULLET : null}
             {domToElement(node.children, node)}
             {node.name == 'br' || node.name == 'li' ? LINE_BREAK : null}
-            {node.name == 'p' && index < list.length - 1 ? PARAGRAPH_BREAK : null}
-            {node.name == 'h1' || node.name == 'h2' || node.name == 'h3' || node.name == 'h4' || node.name == 'h5' ? LINE_BREAK : null}
+            {node.name == 'p' && index < list.length - 1 ? (
+              PARAGRAPH_BREAK
+            ) : null}
+            {node.name == 'h1' ||
+            node.name == 'h2' ||
+            node.name == 'h3' ||
+            node.name == 'h4' ||
+            node.name == 'h5' ? (
+              LINE_BREAK
+            ) : null}
           </Text>
         )
       }

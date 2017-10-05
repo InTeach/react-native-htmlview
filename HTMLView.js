@@ -1,10 +1,6 @@
-import React, {Component, PropTypes} from 'react'
+import React, {Component} from 'react'
 import htmlToElement from './htmlToElement'
-import {
-  Linking,
-  StyleSheet,
-  Text,
-} from 'react-native'
+import {Linking, StyleSheet, Text} from 'react-native'
 
 const boldStyle = {fontWeight: '500'}
 const italicStyle = {fontStyle: 'italic'}
@@ -74,18 +70,16 @@ class HtmlView extends Component {
 
   render() {
     if (this.state.element) {
-      return <Text style={this.props.stylesheet} children={this.state.element} {...this.props} />
+      return (
+        <Text
+          style={this.props.stylesheet}
+          children={this.state.element}
+          {...this.props}
+        />
+      )
     }
-    return <Text style={this.props.stylesheet} {...this.props}/>
+    return <Text style={this.props.stylesheet} {...this.props} />
   }
-}
-
-HtmlView.propTypes = {
-  value: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
-  stylesheet: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
-  onLinkPress: PropTypes.func,
-  onError: PropTypes.func,
-  renderNode: PropTypes.func,
 }
 
 HtmlView.defaultProps = {

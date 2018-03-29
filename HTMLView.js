@@ -1,12 +1,12 @@
-import React, {Component} from 'react'
-import htmlToElement from './htmlToElement'
-import {Linking, StyleSheet, Text} from 'react-native'
+import React, { Component } from "react";
+import htmlToElement from "./htmlToElement";
+import { Linking, StyleSheet, Text } from "react-native";
 
-const boldStyle = {fontWeight: '500'}
-const italicStyle = {fontStyle: 'italic'}
-const codeStyle = {fontFamily: 'Menlo'}
-const underlineStyle = {textDecorationLine: 'underline'}
-const strikeStyle = {textDecorationLine: 'line-through'}
+const boldStyle = { fontWeight: "500" };
+const italicStyle = { fontStyle: "italic" };
+const codeStyle = { fontFamily: "Menlo" };
+const underlineStyle = { textDecorationLine: "underline" };
+const strikeStyle = { textDecorationLine: "line-through" };
 
 const baseStyles = StyleSheet.create({
   b: boldStyle,
@@ -18,54 +18,55 @@ const baseStyles = StyleSheet.create({
   strike: strikeStyle,
   code: codeStyle,
   a: {
-    fontWeight: '500',
-    color: '#007AFF',
-  },
-})
+    fontWeight: "500",
+    color: "#007AFF"
+  }
+});
 
 class HtmlView extends Component {
   constructor() {
-    super()
+    super();
     this.state = {
-      element: null,
-    }
+      element: null
+    };
   }
 
   componentDidMount() {
-    this.mounted = true
-    this.startHtmlRender(this.props.value)
+    this.mounted = true;
+    this.startHtmlRender(this.props.value);
   }
 
   componentWillReceiveProps(nextProps) {
     if (this.props.value !== nextProps.value) {
-      this.startHtmlRender(nextProps.value)
+      this.startHtmlRender(nextProps.value);
     }
   }
 
   componentWillUnmount() {
-    this.mounted = false
+    this.mounted = false;
   }
 
   startHtmlRender(value) {
     if (!value) {
-      this.setState({element: null})
+      this.setState({ element: null });
     }
 
     const opts = {
       linkHandler: this.props.onLinkPress,
       styles: Object.assign({}, baseStyles, this.props.stylesheet),
       customRenderer: this.props.renderNode,
-    }
+      stylesheet: this.props.stylesheet || {}
+    };
 
     htmlToElement(value, opts, (err, element) => {
       if (err) {
-        this.props.onError(err)
+        this.props.onError(err);
       }
 
       if (this.mounted) {
-        this.setState({element})
+        this.setState({ element });
       }
-    })
+    });
   }
 
   render() {
@@ -76,15 +77,15 @@ class HtmlView extends Component {
           children={this.state.element}
           {...this.props}
         />
-      )
+      );
     }
-    return <Text style={this.props.stylesheet} {...this.props} />
+    return <Text style={this.props.stylesheet} {...this.props} />;
   }
 }
 
 HtmlView.defaultProps = {
   onLinkPress: url => Linking.openURL(url),
-  onError: console.error.bind(console),
-}
+  onError: console.error.bind(console)
+};
 
-export default HtmlView
+export default HtmlView;

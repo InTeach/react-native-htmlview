@@ -80,13 +80,6 @@ function htmlToElement(rawHtml, opts, done) {
           };
           return <Image key={index} source={source} style={img_style} />;
         }
-        if (node.name === "strong") {
-          return (
-            <Text style={{ fontWeight: "bold" }}>
-              {domToElement(node.children, node)}
-            </Text>
-          );
-        }
 
         var linkPressHandler = null;
         if (node.name == "a" && node.attribs && node.attribs.href) {

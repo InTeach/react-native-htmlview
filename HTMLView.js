@@ -53,7 +53,7 @@ class HtmlView extends Component {
 
     const opts = {
       linkHandler: this.props.onLinkPress,
-      styles: Object.assign({}, baseStyles, this.props.stylesheet),
+      styles: Object.assign({}, baseStyles, this.props.theme),
       customRenderer: this.props.renderNode,
       stylesheet: this.props.stylesheet || {}
     };
